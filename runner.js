@@ -29,7 +29,7 @@ exports.start = function (port){
 			console.log('RUNNER: ' + data);
 		}
 	);
-
+  return cp;
 }
 
 if (module == require.main) {
