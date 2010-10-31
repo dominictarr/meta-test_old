@@ -78,7 +78,7 @@ exports['test one pass'] = function (test){
   function suiteDone (report){
     var exp = tests(t('pass','s'))
 
-    test.ok(subtree.subtree(exp,report[0]),"subtree")
+    subtree.assert_subtree(exp,report[0])
     test.ok(report[0].tests)
     test.equal(report[0].tests[0].name,'pass')
     test.equal(report[0].tests[0].status,'success')
@@ -145,7 +145,7 @@ exports['test not finishing test'] = function(test){
 
 exports['test hanging test'] = function (test){
   var m = new MetaTest()
-  , timeout = 2000
+  , timeout = 1000
   , t_id = setTimeout(function(){
     m.stop()
     throw new Error("test timed out after " + timeout + " ms")

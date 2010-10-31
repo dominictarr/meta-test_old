@@ -33,7 +33,7 @@ exports.subtree =	function subtree(little,big){
 			return true;
 		} catch (err){
 			console.log('error');
-			if (err instanceof AssertionError) {
+			if (err instanceof assert.AssertionError) {
 				return false;
 			} else { throw err };
 		}
