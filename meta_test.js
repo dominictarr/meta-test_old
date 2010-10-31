@@ -87,7 +87,8 @@ function MetaTest(port){
       self.runner.runRequire(job[0],job[1])
 
       return
-
+      //modify this to check for timeout... 
+      //which will be canceled when the process exists.
       function wrapFinishFunc(object,key){
         var f = object[key] 
         if('function' === typeof object[key]) {
