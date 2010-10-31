@@ -5,7 +5,7 @@
 var sys = require('sys')
 , inspect = require('sys').inspect
 ,  DNode = require('dnode')
-,  runner = require('../runner')
+,  runner = require('../lib/runner')
 ,  subtree = require('../lib/subtree');
 
 function checklist (l,test){
@@ -205,13 +205,13 @@ function testATest(test,filename,timeout,checkResults){
 }
 
 exports['test start one pass'] = function (test){
-  testATest(test,'./test/examples/test-one_pass',2000,suiteDone)
+  testATest(test,__dirname + '/examples/test-one_pass',2000,suiteDone)
   function suiteDone(results){
     console.log("DONE:" + inspect(results));
   }
 }
 exports['test start example1'] = function (test){
-  testATest(test,'./test/examples/test-example1',7000,suiteDone)
+  testATest(test,__dirname + '/examples/test-example1',7000,suiteDone)
   function suiteDone (results){
     console.log("DONE:" + inspect(results));
 //  throw new Error ("CATCH THIS");

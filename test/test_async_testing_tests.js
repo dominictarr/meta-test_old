@@ -3,8 +3,8 @@ if (module == require.main) {
   require('async_testing').run(__filename, process.ARGV);
 }
 
-var MetaTest = require('../meta_test')
-, subtree = require('../subtree')
+var MetaTest = require('../lib/meta_test')
+, subtree = require('../lib/subtree')
 
 function runTest (test,filename,expected){
   var m = MetaTest()
@@ -31,7 +31,7 @@ exports['test-all_passing'] = function(test){
       }
     }
   
-  runTest(test,'./test/async_testing_tests/test-all_passing',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-all_passing',expect)
 }
 
 exports['test-async_assertions'] = function(test){
@@ -48,7 +48,7 @@ exports['test-async_assertions'] = function(test){
       }
     }
     
-  runTest(test,'./test/async_testing_tests/test-async_assertions',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-async_assertions',expect)
 }
 
 exports['test-custom_assertions'] = function(test){
@@ -61,7 +61,7 @@ exports['test-custom_assertions'] = function(test){
       }
     }
     
-  runTest(test,'./test/async_testing_tests/test-custom_assertions',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-custom_assertions',expect)
 }
 
 exports['test-custom_assertions'] = function(test){
@@ -74,7 +74,7 @@ exports['test-custom_assertions'] = function(test){
       }
     }
     
-  runTest(test,'./test/async_testing_tests/test-custom_assertions',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-custom_assertions',expect)
 }
 
 exports['test-errors'] = function(test){
@@ -87,7 +87,7 @@ exports['test-errors'] = function(test){
       }
     }
     
-  runTest(test,'./test/async_testing_tests/test-errors',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-errors',expect)
 }
 
 exports['test-multiple_errors'] = function(test){
@@ -102,7 +102,7 @@ exports['test-multiple_errors'] = function(test){
       }
     }
     
-  runTest(test,'./test/async_testing_tests/test-multiple_errors',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-multiple_errors',expect)
 }
 exports['test-sync_assertions'] = function(test){
   var expect = 
@@ -118,7 +118,7 @@ exports['test-sync_assertions'] = function(test){
       }
     }
     
-  runTest(test,'./test/async_testing_tests/test-sync_assertions',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-sync_assertions',expect)
 }
 
 exports['test-uncaught_exception_handlers'] = function(test){
@@ -139,7 +139,7 @@ exports['test-uncaught_exception_handlers'] = function(test){
       }
     }
     
-  runTest(test,'./test/async_testing_tests/test-uncaught_exception_handlers',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-uncaught_exception_handlers',expect)
 }
 
 exports['test-wrap_tests'] = function(test){
@@ -155,7 +155,7 @@ exports['test-wrap_tests'] = function(test){
       }
     }
     
-  runTest(test,'./test/async_testing_tests/test-wrap_tests',expect)
+  runTest(test,__dirname + '/async_testing_tests/test-wrap_tests',expect)
 }
 
 

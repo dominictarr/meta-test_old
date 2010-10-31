@@ -17,8 +17,8 @@ if (module == require.main) {
 
 
 
-var MetaTest = require('../meta_test')
-, subtree = require('../subtree')
+var MetaTest = require('../lib/meta_test')
+, subtree = require('../lib/subtree')
 , inspect = require('util').inspect
 //new MetaTest()
 
@@ -74,7 +74,7 @@ exports['test one pass'] = function (test){
   var m = new MetaTest()
   , timeout = 3000
   , t_id
-  m.run('./test/examples/test-one_pass',{onSuiteDone: suiteDone});
+  m.run(__dirname + '/examples/test-one_pass',{onSuiteDone: suiteDone});
   function suiteDone (report){
     var exp = tests(t('pass','s'))
 
@@ -96,7 +96,7 @@ exports['error in onSuiteDone'] = function (test){
   , timeout = 1000
   , t_id
   , suiteDoneError = new Error("onSuiteDone error (intensional)");
-  m.run('./test/examples/test-one_pass',{onSuiteDone: suiteDone});
+  m.run(__dirname + '/examples/test-one_pass',{onSuiteDone: suiteDone});
   function suiteDone (report){
     throw suiteDoneError
   }
@@ -118,7 +118,7 @@ exports['test example1'] = function(test){
     , t('test fail','f')
     , t('test error','e')
     )
-  checkTestSuite(test,2000,'./test/examples/test-example1',exp)
+  checkTestSuite(test,2000,__dirname + '/examples/test-example1',exp)
 }
 
 exports['test not finishing test'] = function(test){
@@ -129,7 +129,7 @@ exports['test not finishing test'] = function(test){
     throw new Error("test timed out after " + timeout + " ms")
   },timeout)
 
-  m.run('./test/examples/test-not_finish',{onPrematureExit: prematureExit});
+  m.run(__dirname + '/examples/test-not_finish',{onPrematureExit: prematureExit});
 
   function prematureExit (unfinished){
     console.log("UNFINISHED:" + inspect(unfinished))
@@ -151,7 +151,7 @@ exports['test hanging test'] = function (test){
     throw new Error("test timed out after " + timeout + " ms")
   },timeout)
 
-  m.run('./test/examples/test-hang',{onTimeout: timeout});
+  m.run(__dirname + '/examples/test-hang',{onTimeout: timeout});
   
   function timeout (tests){
     clearTimeout(t_id);
