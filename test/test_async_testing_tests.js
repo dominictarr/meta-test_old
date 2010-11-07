@@ -5,13 +5,15 @@ if (module == require.main) {
 
 var MetaTest = require('meta_test')
 , subtree = require('meta_test/subtree')
+, inspect = require('util').inspect
 
 function runTest (test,filename,expected){
   var m = MetaTest()
   
   m.run(filename,{onSuiteDone: suiteDone})
   
-  function suiteDone(report){
+  function suiteDone(status,report){
+      console.log(inspect(report))
       subtree.assert_subtree(expected,report)
       test.finish();
   } 
@@ -21,32 +23,27 @@ function runTest (test,filename,expected){
 
 exports['test-all_passing'] = function(test){
   var expect = 
-    { '0': 'complete'
-    , '1': 
-        { tests: [
-            {name: 'test A'
-            //, status: 'success'
-            }
-          , {name: 'test B'
-            //, status: 'success'
-            }
-          , {name: 'test C'
-            //, status: 'success'
-            }
-          , {name: 'test D'
-            //, status: 'success'
-            }
-          ]
-        }
-    }
+      { tests: [
+          {name: 'test A'
+          //, status: 'success'
+          }
+        , {name: 'test B'
+          //, status: 'success'
+          }
+        , {name: 'test C'
+          //, status: 'success'
+          }
+        , {name: 'test D'
+          //, status: 'success'
+          }
+        ]
+      }
   
   runTest(test,__dirname + '/.async_testing_tests/test-all_passing',expect)
 }
 
 exports['test-async_assertions'] = function(test){
   var expect = 
-    { '0': 'complete'
-    ,'1': 
       { tests: [
           { name: 'test success'
           //, status: 'success'
@@ -72,15 +69,12 @@ exports['test-async_assertions'] = function(test){
           }
         ]
       }
-    }
     
   runTest(test,__dirname + '/.async_testing_tests/test-async_assertions',expect)
 }
 
 exports['test-custom_assertions'] = function(test){
   var expect = 
-    { '0': 'complete'
-    ,'1': 
       { tests: [
           {name: 'test custom assertion pass'
           //, status: 'success'
@@ -91,15 +85,12 @@ exports['test-custom_assertions'] = function(test){
           }
         ]
       }
-    }
-    
+   
   runTest(test,__dirname + '/.async_testing_tests/test-custom_assertions',expect)
 }
 
 exports['test-custom_assertions'] = function(test){
   var expect = 
-    { '0': 'complete'
-    ,'1': 
       { tests: [
           {name: 'test custom assertion pass'
           //, status: 'success'
@@ -109,15 +100,12 @@ exports['test-custom_assertions'] = function(test){
           }
         ]
       }
-    }
     
   runTest(test,__dirname + '/.async_testing_tests/test-custom_assertions',expect)
 }
 
 exports['test-errors'] = function(test){
   var expect = 
-    { '0': 'complete'
-    , '1': 
       { tests: [
           {name: 'test sync error'
           //, status: 'error'
@@ -129,15 +117,12 @@ exports['test-errors'] = function(test){
           }
         ]
       }
-    }
     
   runTest(test,__dirname + '/.async_testing_tests/test-errors',expect)
 }
 
 exports['test-multiple_errors'] = function(test){
   var expect = 
-    { '0': 'complete'
-    , '1': 
       { tests: [
           {name: 'test async error 1'
           //, status: 'error'
@@ -157,39 +142,35 @@ exports['test-multiple_errors'] = function(test){
           }
         ]
       }
-    }
     
   runTest(test,__dirname + '/.async_testing_tests/test-multiple_errors',expect)
 }
 exports['test-sync_assertions'] = function(test){
   var expect = 
-    { '0': 'complete'
-    , '1': 
-      { tests: [
-          {name: 'test success'
-          //, status: 'success'
-          }
-        , {name: 'test fail'
-          //, status: 'failure'
-          , failure: {}
-          }
-        , {name: 'test success -- numAssertionsExpected'
-          //, status: 'success'
-          }
-        , {name: 'test fail -- numAssertionsExpected'
-          //, status: 'failure'
-          , failure: {}
-          }
-        , {name: 'test fail - not enough -- numAssertionsExpected'
-          //, status: 'failure'
-          , failure: {}
-          }
-        , {name: 'test fail - too many -- numAssertionsExpected'
-          //, status: 'failure'
-          , failure: {}
-          }
-        ]
-      }
+    { tests: [
+        {name: 'test success'
+        //, status: 'success'
+        }
+      , {name: 'test fail'
+        //, status: 'failure'
+        , failure: {}
+        }
+      , {name: 'test success -- numAssertionsExpected'
+        //, status: 'success'
+        }
+      , {name: 'test fail -- numAssertionsExpected'
+        //, status: 'failure'
+        , failure: {}
+        }
+      , {name: 'test fail - not enough -- numAssertionsExpected'
+        //, status: 'failure'
+        , failure: {}
+        }
+      , {name: 'test fail - too many -- numAssertionsExpected'
+        //, status: 'failure'
+        , failure: {}
+        }
+      ]
     }
     
   runTest(test,__dirname + '/.async_testing_tests/test-sync_assertions',expect)
@@ -197,49 +178,46 @@ exports['test-sync_assertions'] = function(test){
 
 exports['test-uncaught_exception_handlers'] = function(test){
   var expect = 
-    { '0': 'complete'
-    ,'1': 
-      { tests: [
-          {name: 'test catch sync error'
-          //, status: 'success'
-          }
-        , {name: 'test catch async error'
-          //, status: 'success'
-          }
-        , {name: 'test sync error fail'
-          //, status: 'failure'
-          , failure: {}
-          }
-        , {name: 'test async error fail'
-          //, status: 'failure'
-          , failure: {}
-          }
-        , {name: 'test sync error async fail'
-          //, status: 'failure'
-          , failure: {}
-          }
-        , {name: 'test async error async fail'
-          //, status: 'failure'
-          , failure: {}
-          }
-        , {name: 'test sync error error again'
-          //, status: 'error'
-          , error: {}
-          }
-        , {name: 'test async error error again'
-          //, status: 'error'
-          , error: {}
-          }
-        , {name: 'test sync error error again async'
-          //, status: 'error'
-          , error: {}
-          }
-        , {name: 'test async error error again async'
-          //, status: 'error'
-          , error: {}
-          }
-        ]
-      }
+    { tests: [
+        {name: 'test catch sync error'
+        //, status: 'success'
+        }
+      , {name: 'test catch async error'
+        //, status: 'success'
+        }
+      , {name: 'test sync error fail'
+        //, status: 'failure'
+        , failure: {}
+        }
+      , {name: 'test async error fail'
+        //, status: 'failure'
+        , failure: {}
+        }
+      , {name: 'test sync error async fail'
+        //, status: 'failure'
+        , failure: {}
+        }
+      , {name: 'test async error async fail'
+        //, status: 'failure'
+        , failure: {}
+        }
+      , {name: 'test sync error error again'
+        //, status: 'error'
+        , error: {}
+        }
+      , {name: 'test async error error again'
+        //, status: 'error'
+        , error: {}
+        }
+      , {name: 'test sync error error again async'
+        //, status: 'error'
+        , error: {}
+        }
+      , {name: 'test async error error again async'
+        //, status: 'error'
+        , error: {}
+        }
+      ]
     }
     
   runTest(test,__dirname + '/.async_testing_tests/test-uncaught_exception_handlers',expect)
@@ -247,27 +225,24 @@ exports['test-uncaught_exception_handlers'] = function(test){
 
 exports['test-wrap_tests'] = function(test){
   var expect = 
-    { '0': 'complete'
-    ,'1': 
-      { tests: [
-          {name: 'test wrapTests'
-          //, status: 'success'
-          }
-        , {name: 'test setup'
-          //, status: 'success'
-          }
-        , {name: 'test wrapper errors'
-          //, status: 'error'
-          , error: {}
-          }
-        , {name: 'test teardown'
-          //, status: 'success'
-          }
-        , {name: 'test teardown async'
-          //, status: 'success'
-          }
-        ]
-      }
+    { tests: [
+        {name: 'sync wrap → test'
+        //, status: 'success'
+        }
+      , {name: 'async setup → test'
+        //, status: 'success'
+        }
+      , {name: 'async teardown → test'
+        //, status: 'error'
+        , error: {}
+        }
+/*      , {name: 'test teardown → test'
+        //, status: 'success'
+        }
+      , {name: 'test teardown async → test'
+        //, status: 'success'
+        }*/
+      ]
     }
     
   runTest(test,__dirname + '/.async_testing_tests/test-wrap_tests',expect)

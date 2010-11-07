@@ -176,17 +176,18 @@ function testATest(test,filename,timeout,checkResults){
          console.log('handshake remote');
          check('handshake remote');
          test.ok(other.runRequire)
-         other.runRequire(filename,{onSuiteDone: suiteDone, onError:errorDone})//change
+         other.runRequire(filename,{onSuiteDone: suiteDone})//change
          
-         function suiteDone(report){
+         function suiteDone(status,report){
           console.log('SUITE DONE');
           console.log(report);
-          checkResults(report)
+          checkResults(status,report)
           check('suiteDone');
           server.end()
           console.log('AFTER SERVER END');
           clearTimeout(time)
          }
+         /*
          function errorDone(report){
           checkResults(report)
           check('suiteDone');
@@ -194,7 +195,7 @@ function testATest(test,filename,timeout,checkResults){
           
           console.log('ERROR - SUITE DONE');
           clearTimeout(time)
-         }
+         }*/
    }
    function ready () {
       console.log('ready');
@@ -215,8 +216,9 @@ exports['test start one pass'] = function (test){
 }
 exports['test start example1'] = function (test){
   testATest(test,require.resolve('./.examples/test-example1'),7000,suiteDone)
-  function suiteDone (results){
-    console.log("DONE:" + inspect(results));
+  function suiteDone (status,results){
+    console.log("DONE:" + inspect(status));
+    console.log("results:" + inspect(results));
 //  throw new Error ("CATCH THIS");
   }
 }

@@ -95,7 +95,7 @@ function MetaTest(port){
         var f = object[key] 
         if('function' === typeof object[key]) {
           object[key] = function (){
-            f.call(null,arguments)
+            f.apply(null,arguments)
             clearTimeout(timeout_id)
             nextJob()
             

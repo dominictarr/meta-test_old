@@ -54,14 +54,14 @@ function checkTestSuite(test,timeout,filename,expected){
   var m = new MetaTest()
   , t_id
   m.run(filename,{onSuiteDone: suiteDone});
-  function suiteDone (report){
+  function suiteDone (status,report){
     console.log(":REPORT:");
     console.log(inspect(report,false,5));
 
     console.log(inspect(expected,false,5));
     
     test.doesNotThrow(function(){
-      subtree.assert_subtree(expected,report[1])
+      subtree.assert_subtree(expected,report)
       });
 
     test.finish()
@@ -79,7 +79,7 @@ exports['test one pass'] = function (test){
   , timeout = 3000
   , t_id
   m.run(require.resolve('./.examples/test-one_pass'),{onSuiteDone: suiteDone});
-  function suiteDone (report){
+  function suiteDone (status,report){
 //    var exp = tests(t('pass','s'))
       var exp = 
         {tests:
@@ -90,11 +90,11 @@ exports['test one pass'] = function (test){
     console.log('test one pass')
     console.log(inspect(report,false,5))
     
-    subtree.assert_subtree(exp,report[1])
-    test.ok(report[1].tests)
-    test.equal(report[1].tests[0].name,'pass')
+    subtree.assert_subtree(exp,report)
+    test.ok(report.tests)
+    test.equal(report.tests[0].name,'pass')
 //    test.equal(report[0].tests[0].status,'success') //there is not currently a status property.
-    test.equal(report[1].tests[0].numAssertions,1)
+    test.equal(report.tests[0].numAssertions,1)
     
     test.finish()
     clearTimeout(t_id)
@@ -158,10 +158,10 @@ exports['test not finishing test'] = function(test){
 
   m.run(require.resolve('./.examples/test-not_finish'),{onSuiteDone: prematureExit});
 
-  function prematureExit (unfinished){
+  function prematureExit (status,unfinished){
     console.log("UNFINISHED:" + inspect(unfinished))
     var exp = {tests: ['not finished']}
-    test.deepEqual(unfinished[1],exp,"expected: " + inspect(exp) + " but got: " + inspect(unfinished[1]))
+    test.deepEqual(unfinished,exp,"expected: " + inspect(exp) + " but got: " + inspect(unfinished))
     //    m.stop();
     // somewhere in dnode there is something which breaks if you stop it twice.
     // gotta fix that
