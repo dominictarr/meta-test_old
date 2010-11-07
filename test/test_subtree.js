@@ -37,6 +37,18 @@ exports.test_subtree_errors = function (test) {
 	test.finish();
 }
 
+exports.test_subtree_object = function (test) {
+	var little = {a: "a",b:"b",d:{}}
+	  ,	big = {a: "a",b:"b",c:"c",d:{hi: "hello"}}
+	  , big2 = {a: "a",b:"b"}
+	subtree.assert_subtree(little,big);
+  test.throws(function(){
+  	subtree.assert_subtree(little,big2);
+	});
+	test.finish();
+}
+
+
 if (module == require.main) {
   require('async_testing').run(__filename, process.ARGV);
 }

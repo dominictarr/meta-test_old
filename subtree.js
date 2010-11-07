@@ -1,13 +1,20 @@
 //subtree
-var assert = require('assert');
-
+var assert = require('assert')
+  , inspect = require('util').inspect
+  
 function assert_subtree(little,big,message,chain){
 	message = message || "";
 
 	//check that every property in little is also in big.
 		chain = chain || [];
+
 		if('object' === typeof little) {
 			for (var k in little) {
+        assert.ok(big[k], message
+          + "results did not have a property:" 
+          + chain.join(".") + "." + k
+          + " expected " + inspect(little[k]))
+
 				t = assert_subtree(little[k],big[k],message,chain.concat([k]))	
 			}
 		} else {
