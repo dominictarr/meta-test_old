@@ -1,79 +1,83 @@
-var async_testing = require('async_testing');
-
-function wrapTestsWrapper(func) {
-  return function(test) {
-    test.ok(true, 'make sure we get here');
-    func(test);
-  }
-}
-
-exports['test wrapTests'] = function(test) {
-  test.numAssertions = 1;
-  test.finish();
-}
-
-async_testing.wrapTests(exports, wrapTestsWrapper);
-
-var extra1 = {}
-  , extra2 = {}
+var async_testing = require('async_testing')
+  , wrap = async_testing.wrap
   ;
 
-function setupWrapper(func) {
-  return function(test) {
-    func(test, extra1, extra2);
-  }
+if (module == require.main) {
+  return async_testing.run(process.ARGV);
 }
 
-exports['test setup'] = setupWrapper(function(test, one, two) {
-  test.strictEqual(one, extra1);
-  test.strictEqual(two, extra2);
-  test.finish();
-});
+var extra1 = {}, extra2 = {};
 
-function errorWrapper(func) {
-  return function(test) {
-    throw new Error();
-  }
-}
+module.exports = {
+  'sync wrap': wrap(
+    { suite:
+      { 'test': function(test) {
+          test.numAssertions = 5;
+          test.strictEqual(test.one, extra1);
+          test.strictEqual(test.two, extra2);
+          test.finish();
+        }
+      }
+    , suiteSetup: function(done) {
+        done();
+      }
+    , setup: function setup(test, done) {
+        test.ok(true, 'make sure we run the setup');
+        test.one = extra1;
+        test.two = extra2;
+    
+        done();
+      }
+    , teardown: function teardown(test, done) {
+        test.ok(true, 'make sure we run the teardown');
+        test.one = extra1;
+        test.two = extra2;
+    
+        done();
+      }
+    }),
 
-// just to make sure errors still work the same way...
-exports['test wrapper errors'] = errorWrapper(function(test) {
-  test.finish();
-});
+  'async setup': wrap(
+    { suite:
+      { 'test': function(test) {
+          test.numAssertions = 4;
+          test.strictEqual(test.one, extra1);
+          test.strictEqual(test.two, extra2);
+          test.finish();
+        }
+      }
+    , setup: function setup(test, done) {
+        test.ok(true, 'make sure we run the setup');
+        test.one = extra1;
+        test.two = extra2;
+    
+        setTimeout(done, 500);
+      }
+    }),
 
-// writing a teardown function is a bit more complicated because we have to
-// account for the asynchronous nature of Node.  Basically, when a test
-// finishes it calls `finish`, so we hijack that method, wait for it to be
-// called, and then when it is, run our teardown code.  Finally, we have to
-// call the original finish to make the sure the test is finished.
-function teardownWrapper(func) {
-  return function(test) {
-    var finish = test.finish;
+  'async teardown': wrap(
+    { suite:
+      { 'test': function(test) {
+          test.numAssertions = 2;
+          test.finish();
+        }
+      }
+    , teardown: function teardown(test, done) {
+        test.ok(true, 'make sure we run the teardown');
+    
+        setTimeout(done, 500);
+      }
+    }),
+};
 
-    test.finish = function() {
-      // teardown code goes here
-      test.ok(true, 'make sure we get here');
+wrap( { suite: module.exports
+      , setup: function(test, done) {
+          test.ok(true, 'make sure we get to outer level setup')
 
-      // finish the test
-      finish();
-    }
+          done();
+        }
+      });
 
-    func(test);
-  }
-}
-
-exports['test teardown'] = teardownWrapper(function(test) {
-  test.numAssertions = 1;
-  test.finish();
-});
-
-exports['test teardown async'] = teardownWrapper(function(test) {
-  test.numAssertions = 1;
-
-  process.nextTick(function() {
-      test.finish();
-    });
-});
 
 if (module == require.main) {
   async_testing.run(__filename, process.ARGV);

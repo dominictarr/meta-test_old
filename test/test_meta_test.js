@@ -55,11 +55,13 @@ function checkTestSuite(test,timeout,filename,expected){
   , t_id
   m.run(filename,{onSuiteDone: suiteDone});
   function suiteDone (report){
+    console.log(":REPORT:");
+    console.log(inspect(report,false,5));
 
-    console.log(inspect(expected),false,5);
+    console.log(inspect(expected,false,5));
     
     test.doesNotThrow(function(){
-      subtree.assert_subtree(expected,report[0])
+      subtree.assert_subtree(expected,report[1])
       });
 
     test.finish()
@@ -78,12 +80,21 @@ exports['test one pass'] = function (test){
   , t_id
   m.run(require.resolve('./.examples/test-one_pass'),{onSuiteDone: suiteDone});
   function suiteDone (report){
-    var exp = tests(t('pass','s'))
-
-    subtree.assert_subtree(exp,report[0])
-    test.ok(report[0].tests)
-    test.equal(report[0].tests[0].name,'pass')
-    test.equal(report[0].tests[0].status,'success')
+//    var exp = tests(t('pass','s'))
+      var exp = 
+        {tests:
+          [{  name : 'pass'
+            , numAssertions: 1
+            }]
+        }
+    console.log('test one pass')
+    console.log(inspect(report,false,5))
+    
+    subtree.assert_subtree(exp,report[1])
+    test.ok(report[1].tests)
+    test.equal(report[1].tests[0].name,'pass')
+//    test.equal(report[0].tests[0].status,'success') //there is not currently a status property.
+    test.equal(report[1].tests[0].numAssertions,1)
     
     test.finish()
     clearTimeout(t_id)
@@ -115,11 +126,25 @@ exports['error in onSuiteDone'] = function (test){
 }
 
 exports['test example1'] = function(test){
-  var exp = tests(
+/*  var exp = tests(
       t('test pass','s')
     , t('test fail','f')
     , t('test error','e')
-    )
+    )*/
+    var exp = 
+      { tests: 
+        [ { name:'test pass'
+          , numAssertions: 1
+          }
+        , { name:'test fail'
+          , failure: {}
+          }
+        , { name:'test error'
+          , error: {}
+          }
+        ]
+      }
+
   checkTestSuite(test,2000,require.resolve('./.examples/test-example1'),exp)
 }
 
@@ -131,12 +156,12 @@ exports['test not finishing test'] = function(test){
     throw new Error("test timed out after " + timeout + " ms")
   },timeout)
 
-  m.run(require.resolve('./.examples/test-not_finish'),{onPrematureExit: prematureExit});
+  m.run(require.resolve('./.examples/test-not_finish'),{onSuiteDone: prematureExit});
 
   function prematureExit (unfinished){
     console.log("UNFINISHED:" + inspect(unfinished))
-    var exp = ['not finished']
-    test.deepEqual(unfinished[0],exp,"expected: " + inspect(exp) + " but got: " + inspect(unfinished[0]))
+    var exp = {tests: ['not finished']}
+    test.deepEqual(unfinished[1],exp,"expected: " + inspect(exp) + " but got: " + inspect(unfinished[1]))
     //    m.stop();
     // somewhere in dnode there is something which breaks if you stop it twice.
     // gotta fix that
