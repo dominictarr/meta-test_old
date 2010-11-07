@@ -21,7 +21,7 @@ function MetaTest(port){
     I've arranged the functions so that if something only needs to be
     visible to one scope, then it is defined in that scope.
 
-    and i've put named functions after returns so make to clearer...
+    and i've put named functions after returns so make it clearer...
   */
   
   self.run = function (filename,opts){
@@ -35,7 +35,7 @@ function MetaTest(port){
       self.server = startServer(port,isReady,startRunner)
       
       return self
-            
+      
       function isReady(remote){
         self.runner = remote
         doJob();
@@ -73,27 +73,31 @@ function MetaTest(port){
       }
     }
 
-
     function addJob (fn,opts){
       jobs.push([fn,opts])
     }
 
     function doJob (){
       var job = jobs.shift()
+      var timeout_id = opts.onTimeout ? 
+          setTimeout(opts.onTimeout,opts.time || 500) : 0
 
       wrapFinishFunc(job[1],'onSuiteDone')
       wrapFinishFunc(job[1],'onPrematureExit')
+      wrapFinishFunc(job[1],'onTimeout')
       self.runner.runRequire(job[0],job[1])
 
       return
       //modify this to check for timeout... 
       //which will be canceled when the process exists.
+      
       function wrapFinishFunc(object,key){
         var f = object[key] 
         if('function' === typeof object[key]) {
           object[key] = function (){
             f.call(null,arguments)
-            nextJob() 
+            clearTimeout(timeout_id)
+            nextJob()
             
             return
             
@@ -101,7 +105,7 @@ function MetaTest(port){
               if(jobs.length > 0){
                 doJob()
               } else {
-                self.server.end()
+                self.stop()
               }
             }
           }

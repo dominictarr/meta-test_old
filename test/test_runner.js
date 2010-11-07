@@ -5,8 +5,8 @@
 var sys = require('sys')
 , inspect = require('sys').inspect
 ,  DNode = require('dnode')
-,  runner = require('../lib/runner')
-,  subtree = require('../lib/subtree');
+,  runner = require('meta_test/runner')
+,  subtree = require('meta_test/subtree');
 
 function checklist (l,test){
 	var list = l.concat()
@@ -21,7 +21,7 @@ function checklist (l,test){
 			test.ok(index != -1, "expected that list :" + sys.inspect(list) + " included " + sys.inspect(item) )
 			list.splice(index,1)
 			if (list.length == 0){
-				test.finish();
+        process.nextTick(function(){test.finish();});
 			}
 		}
 	}
@@ -71,21 +71,23 @@ exports['test killable'] = function (test){
 
    function handshake (other){
          console.log('handshake');
-         check('handshake');
          test.ok(other.runRequire)
         
          console.log('kill runner');
-         client.kill()     
+         client.kill()
+//         clearTimeout(time)
+         check('handshake');
    }
 
    function ready () {
          console.log('ready');
-      client = runner.connect(port) 
+      client = runner.start(port) 
    }
    
    time = setTimeout(function(){
-      check()
+      console.log('timeout');
       server.end();
+  //    check();
    },1000);
 }
 
@@ -94,11 +96,12 @@ exports['test init'] = function (test){
    ,  check = checklist(['handshake'],test)
    ,  server = mockServer(port,handshake,ready,test)
    ,  client
-   
+   ,  time
    function handshake (other){
          console.log('handshake');
-         check('handshake');
          test.ok(other.runRequire)
+         check('handshake');
+         clearTimeout(time)
    }
 
    function ready () {
@@ -106,7 +109,7 @@ exports['test init'] = function (test){
       client = runner.connect(port) 
    }
    
-   setTimeout(function(){
+   time = setTimeout(function(){
       check()
       server.end();
    },1000);
@@ -128,7 +131,7 @@ exports['test start process'] = function (test){
    }
 
    setTimeout(function(){
-      check()
+      //check()
       server.end();
    },1000);
 }
@@ -173,7 +176,7 @@ function testATest(test,filename,timeout,checkResults){
          console.log('handshake remote');
          check('handshake remote');
          test.ok(other.runRequire)
-         other.runRequire(filename,{onSuiteDone: suiteDone, onError:errorDone})
+         other.runRequire(filename,{onSuiteDone: suiteDone, onError:errorDone})//change
          
          function suiteDone(report){
           console.log('SUITE DONE');
@@ -205,13 +208,13 @@ function testATest(test,filename,timeout,checkResults){
 }
 
 exports['test start one pass'] = function (test){
-  testATest(test,__dirname + '/examples/test-one_pass',2000,suiteDone)
+  testATest(test,require.resolve('./.examples/test-one_pass'),2000,suiteDone)
   function suiteDone(results){
     console.log("DONE:" + inspect(results));
   }
 }
 exports['test start example1'] = function (test){
-  testATest(test,__dirname + '/examples/test-example1',7000,suiteDone)
+  testATest(test,require.resolve('./.examples/test-example1'),7000,suiteDone)
   function suiteDone (results){
     console.log("DONE:" + inspect(results));
 //  throw new Error ("CATCH THIS");

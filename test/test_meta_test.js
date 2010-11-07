@@ -11,14 +11,16 @@ if (module == require.main) {
   but what I want is one callback which gives a report no matter how the test
   finishes.
   
-  but, first i want to get a handle on async_testing: tests to check the 
-  results of all of the async_testing tests...
+  test weakness:
+  
+  I have code for cuing up multiple jobs, but no test for that.
+
 */
 
 
 
-var MetaTest = require('../lib/meta_test')
-, subtree = require('../lib/subtree')
+var MetaTest = require('meta_test')
+, subtree = require('meta_test/subtree')
 , inspect = require('util').inspect
 //new MetaTest()
 
@@ -74,7 +76,7 @@ exports['test one pass'] = function (test){
   var m = new MetaTest()
   , timeout = 3000
   , t_id
-  m.run(__dirname + '/examples/test-one_pass',{onSuiteDone: suiteDone});
+  m.run(require.resolve('./.examples/test-one_pass'),{onSuiteDone: suiteDone});
   function suiteDone (report){
     var exp = tests(t('pass','s'))
 
@@ -96,7 +98,7 @@ exports['error in onSuiteDone'] = function (test){
   , timeout = 1000
   , t_id
   , suiteDoneError = new Error("onSuiteDone error (intensional)");
-  m.run(__dirname + '/examples/test-one_pass',{onSuiteDone: suiteDone});
+  m.run(require.resolve('./.examples/test-one_pass'),{onSuiteDone: suiteDone});
   function suiteDone (report){
     throw suiteDoneError
   }
@@ -118,7 +120,7 @@ exports['test example1'] = function(test){
     , t('test fail','f')
     , t('test error','e')
     )
-  checkTestSuite(test,2000,__dirname + '/examples/test-example1',exp)
+  checkTestSuite(test,2000,require.resolve('./.examples/test-example1'),exp)
 }
 
 exports['test not finishing test'] = function(test){
@@ -129,7 +131,7 @@ exports['test not finishing test'] = function(test){
     throw new Error("test timed out after " + timeout + " ms")
   },timeout)
 
-  m.run(__dirname + '/examples/test-not_finish',{onPrematureExit: prematureExit});
+  m.run(require.resolve('./.examples/test-not_finish'),{onPrematureExit: prematureExit});
 
   function prematureExit (unfinished){
     console.log("UNFINISHED:" + inspect(unfinished))
@@ -145,13 +147,13 @@ exports['test not finishing test'] = function(test){
 
 exports['test hanging test'] = function (test){
   var m = new MetaTest()
-  , timeout = 1000
+  , time = 100
   , t_id = setTimeout(function(){
     m.stop()
     throw new Error("test timed out after " + timeout + " ms")
-  },timeout)
+  },1000)
 
-  m.run(__dirname + '/examples/test-hang',{onTimeout: timeout});
+  m.run(require.resolve('./.examples/test-hang'),{time: time, onTimeout: timeout});
   
   function timeout (tests){
     clearTimeout(t_id);

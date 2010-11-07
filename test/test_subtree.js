@@ -1,4 +1,4 @@
-var subtree = require("../lib/subtree")
+var subtree = require("meta_test/subtree")
 ,	sys = require('sys');
 
 
