@@ -1,0 +1,17 @@
+{ "name" :"meta_test"
+, "author": "dominictarr"
+, "tests": 
+    { "test_runner": 
+      { "test": "meta_test/test/test_runner"
+      , "target": "meta_test/runner"
+      }
+    , "test_meta_test":
+      { "test": "meta_test/test/test_meta_test"
+      , "target": "meta_test"
+      }
+    , "test_subtree":
+      { "test": "meta_test/test/test_subtree"
+      , "target": "meta_test/subtree"
+      }
+    }
+}
