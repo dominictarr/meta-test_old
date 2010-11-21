@@ -13,13 +13,12 @@ function runTest (test,filename,expected){
   m.run(filename,{onSuiteDone: suiteDone})
   
   function suiteDone(status,report){
-//      console.log("test : " + inspect(test))
-      console.log("expected: ")
-      console.log(inspect(expected))
-      console.log("report: ")
-      console.log(inspect(report))
-      subtree.assert_subtree(expected,report)
-      test.finish();
+    console.log("expected: ")
+    console.log(inspect(expected))
+    console.log("report: ")
+    console.log(inspect(report))
+    subtree.assert_subtree(expected,report)
+    test.finish();
   } 
 }
 

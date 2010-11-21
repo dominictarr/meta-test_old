@@ -1,5 +1,5 @@
-var subtree = require("meta_test/subtree")
-,	sys = require('sys');
+var subtree = require("async_testing/lib/subtree")
+,	sys = require('util');
 
 
 function  sb (test,little,big,bool) {
