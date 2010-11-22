@@ -71,7 +71,7 @@ function runFile (file,options) {
     lines[0] = buffer + lines[0];
     buffer = lines.pop();
 
-    console.log(">\t"+data)
+    //console.log(">\t"+data)
 
     lines = messager.messageDecode(lines);
 
@@ -83,7 +83,7 @@ function runFile (file,options) {
     var errorBuffer = '';
   child.stderr.on('data', function(data) {
     errorBuffer += data.toString();
-    console.log("!" + data)
+    //console.log("!" + data)
   });
 
 /*

@@ -1,8 +1,8 @@
 //test_reports.asynct
 
 var should = require('should')
-  , TestReports = require('async_testing/lib/test_reports')
-  , subtree = require('async_testing/lib/subtree')
+  , TestReports = require('meta_test/test_reports')
+  , subtree = require('meta_test/subtree')
   , assertObj = TestReports.assertObj
   , assert = require('assert')
   , query = require('query')
@@ -148,7 +148,13 @@ exports ['chaining dsl for generating report'] = function (test){
 function errorEql(b,a){
     delete b.stack
     delete a.stack
-    b.should.eql(a)
+    b.name = b.name
+    a.name = a.name
+    should.equal(a.name,b.name)
+    if(b.message)
+      b.message.should.eql(a.message)
+    else
+      should.ok(!a.message)
 }
 
 exports ['ability to get a assert without throwing it'] = function (test){
@@ -182,3 +188,4 @@ exports ['if no errors then status is success'] = function (test){
 
   test.finish()
 }
+

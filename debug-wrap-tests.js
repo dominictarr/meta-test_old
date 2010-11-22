@@ -17,6 +17,7 @@ function runTest (file,callbacks){
   process.on('exit', onExit)
     
   test = require(file)
+  r.testNames = [] //Object.keys(test)
   suiteStart()
   require('async_testing').runSuite (test,newCallbacks)
 
@@ -31,7 +32,18 @@ function runTest (file,callbacks){
 
   function testStart (name){
     console.log('' + style("TEST START -- " + name).bold.yellow)
-    callback('onTestStart',name,r.testStart(name))
+    r.testNames.push(name)
+    try{var t = r.testStart(name)} catch (err) {
+
+      console.log("ERROR:" , err.stack)
+      throw new Error("asdfsdg")
+    
+    }
+    //thwory! should is makeing an error with no stack trace
+    //new theory. when there is an error inbetween tests, runSuite will exit without printing.
+    //havn't managed to confirm this... fixed it though.
+    console.log('' + style(inspect(r.tests)).bold.yellow)
+    callback('onTestStart',name,t)
   }
   function testDone (status,report){
     if (report.failure)

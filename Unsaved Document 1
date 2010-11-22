@@ -1,0 +1,6 @@
+#! node
+
+var argv = require('optimist')
+    .usage('Usage: meta-test -a [script/asynct/expresso/vows] -t [test]')
+    .demand(['a','t'])
+    .argv

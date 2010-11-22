@@ -1,4 +1,4 @@
-var TestReports = require('meta_test/test_reports')
+/*var TestReports = require('meta_test/test_reports')
   , inspect = require('inspect')
   , se = require('style/error')  
   , style = require('style')  
@@ -17,6 +17,7 @@ function runTest (file,callbacks){
   process.on('exit', onExit)
     
   test = require(file)
+  r.testNames = Object.keys(test)
   suiteStart()
   require('async_testing').runSuite (test,newCallbacks)
 
@@ -31,7 +32,16 @@ function runTest (file,callbacks){
 
   function testStart (name){
     console.log('' + style("TEST START -- " + name).bold.yellow)
-    callback('onTestStart',name,r.testStart(name))
+    try{var t = r.testStart(name)} catch (err) {
+      console.log("ERROR:" , err)
+      console.log("ERROR:" , err.stack)
+      throw new Error("asdfsdg")
+    
+    }
+    //thwory! should is makeing an error with no stack trace
+    //new theory. when there is an error inbetween tests, runSuite will exit without printing.
+    console.log('' + style(inspect(r.tests)).bold.yellow)
+    callback('onTestStart',name,t)
   }
   function testDone (status,report){
     if (report.failure)
@@ -58,8 +68,13 @@ function runTest (file,callbacks){
     callback ('onExit',code,status)
   }
 }
+*/
 
 if (require.main == module){
-  runTest('meta_test/test/examples/asynct/test-wrap_tests',require('./cli').callbacks)
+  require('async_testing').runSuite(require('meta_test/test/examples/asynct/test-wrap_tests'),
+    { onTestStart: function (){throw new Error("INVISIBLE!")}
+    , onSuiteDone: function (status){console.log("suite is :", status)}
+  
+  })
 }
 

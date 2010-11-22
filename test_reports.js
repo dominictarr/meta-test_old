@@ -71,8 +71,6 @@ function TestReports (filename){
 
   this.suiteStart = suiteStart
   function suiteStart () {
-    secret.testNames.should.not.be.empty
-
     secret.report.status = 'started'
     secret.report.tests = secret.tests
     secret.report.testNames = secret.testNames
@@ -81,7 +79,9 @@ function TestReports (filename){
 
   this.testStart = testStart
   function testStart (name) {
-    secret.testNames.should.contain(name)
+//    secret.testNames.should.contain(name)
+  if(secret.testNames.indexOf(name) == -1)
+    secret.testNames.push(name)
     var t = 
         { test: name
         , status: "started" }
@@ -96,7 +96,7 @@ function TestReports (filename){
     secret.testNames.should.contain(name)
     
     var t = query(secret.tests).first({test: name})
-
+    console.log(secret.tests)
     if(!t.failure){ t.status = 'success' }
 
     return t
@@ -150,5 +150,6 @@ function TestReports (filename){
     this.testDone(name)
     return this
   }
-  
 }
+
+

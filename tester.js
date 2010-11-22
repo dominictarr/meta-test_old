@@ -55,7 +55,6 @@ function Tester (filename){
   }
 }
 
-
 exports = module.exports = Tester
 module.exports.errorType = errorType
 
@@ -71,4 +70,14 @@ function errorType(error){
     return typeof error
   }
 }
+
+
+/*
+  OKAY, so I've spend all day making error messages look nice, and colourful.
+  next: eat, then make command line runner for meta-test ...
+  
+  
+
+*/
+
 

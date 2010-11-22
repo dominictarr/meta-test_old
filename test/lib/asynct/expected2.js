@@ -63,9 +63,9 @@ var dir = "meta_test/test/examples/asynct/"
     
 , { suite: 'test-wrap_tests'
   , tests: [
-      ['sync wrap → test',error]
-    , ['async setup → test',error]
-    , ['async teardown → test',error] ] } ]
+      ['sync wrap → test']
+    , ['async setup → test']
+    , ['async teardown → test'] ] } ]
 module.exports = tests.map(testify)
 
 //generate the test reports from this formula.
