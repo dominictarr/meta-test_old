@@ -96,7 +96,7 @@ function TestReports (filename){
     secret.testNames.should.contain(name)
     
     var t = query(secret.tests).first({test: name})
-    console.log(secret.tests)
+//    console.log(secret.tests)
     if(!t.failure){ t.status = 'success' }
 
     return t

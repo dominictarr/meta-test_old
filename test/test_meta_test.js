@@ -19,8 +19,8 @@ if (module == require.main) {
 
 
 
-var MetaTest = require('meta_test')
-, subtree = require('meta_test/subtree')
+var MetaTest = require('meta-test')
+, subtree = require('meta-test/subtree')
 , inspect = require('util').inspect
 //new MetaTest()
 
