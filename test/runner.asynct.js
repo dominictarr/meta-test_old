@@ -5,8 +5,8 @@
 var sys = require('sys')
 , inspect = require('sys').inspect
 ,  DNode = require('dnode')
-,  runner = require('meta-test/runner')
-,  subtree = require('meta-test/subtree');
+,  runner = require('meta_test/runner')
+,  subtree = require('meta_test/subtree');
 
 function checklist (l,test){
 	var list = l.concat()

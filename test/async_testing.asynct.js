@@ -1,9 +1,9 @@
-var child = require('meta-test/child2')
+var child = require('meta_test/child2')
   , inspect = require('inspect')
-  , Tester = require('meta-test/tester')
-  , subtree = require('meta-test/subtree')
-  , TestReports = require('meta-test/test_reports')
-  , expected = require('meta-test/test/lib/asynct/expected2')
+  , Tester = require('meta_test/tester')
+  , subtree = require('meta_test/subtree')
+  , TestReports = require('meta_test/test_reports')
+  , expected = require('meta_test/test/lib/asynct/expected2')
 
 expected.forEach(makeTests)
 
@@ -24,7 +24,7 @@ function makeTests(expect){
     function (test){
       console.log("test:" + expect.suite)
 
-      child.runFile(expect.filename,{adapter: "meta-test/asynct_adapter", onSuiteDone: done})
+      child.runFile(expect.filename,{adapter: "meta_test/asynct_adapter", onSuiteDone: done})
       
       function done(status,report){
         test.notEqual(status,"loadError","\"" + report.stderr + "\"")//fix this

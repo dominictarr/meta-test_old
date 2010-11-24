@@ -1,9 +1,4 @@
-/*
-  should refactor subtree into a datastructure helper module.
-*/
-
-
-var subtree = require("meta-test/subtree")
+var subtree = require("async_testing/lib/subtree")
 ,	sys = require('util');
 
 

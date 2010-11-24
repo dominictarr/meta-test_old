@@ -4,8 +4,7 @@
 exports ['does not call onSuiteDone twice'] = function (test){
 
   var file = 'async_testing/test/examples/test-stderr'
-//  require('async_testing').runFile(file,{onSuiteDone:suiteDone})
-  require('meta-test/child2').runFile(file,{adapter: 'meta-test/async_adapter', onSuiteDone:suiteDone})
+  require('async_testing').runFile(file,{onSuiteDone:suiteDone})
 
   function suiteDone (status,report){
     console.log("suiteDone - " + status + "'" + file + "'")

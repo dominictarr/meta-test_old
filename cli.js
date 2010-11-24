@@ -8,7 +8,7 @@ var argv = require('optimist')
 //var argv = {b: false, a: 'asynct'}
   , style = require("style").enable(!argv.b)
   , errors = require("style/error")
-  , child = require('child')
+  , child = require('./child2')
   , adapters = 
       { script: "./tester"
       , asynct: "./asynct_adapter" }
@@ -27,7 +27,6 @@ exports.callbacks = { adapter: adapter
       , failure : ['yellow','inverse']
       , error :   ['red','bold','underline'] 
       , started: ['yellow','bold']
-      , loadError: ['yellow','bold','underline','inverse']
       }
    var suite =''
   
@@ -70,28 +69,20 @@ exports.callbacks = { adapter: adapter
   function suiteDone (stat,report){
     var s = [style("Suite Done!").white.bold, style(report.suite).bold.cyan, '\n\t', style(report.filename).grey,'\n'].join(' ')
     
-      tests = report.tests || []
+    colours = 
+      { success : ["green",'bold']
+      , failure : ['yellow','inverse']
+      , error :   ['red','bold','underline'] }
+    
     var pass = 0
-
-    s += tests.map(function (t){
+      s += report.tests.map(function (t){
       if(t.status == 'success') pass ++
       return ['   ',status(t.status), ' -- ' , style(t.test).bold].join(" ")
-         + (t.failure ? '\n' + errors.styleError(t.failure,!argv.b) : ' -- ') + '\n'
+       + (t.failure ? '\n' + errors.styleError(t.failure,!argv.b) : ' -- ') + '\n'
     }).join('\n')
 
-/*
-  treat loadError like a normal error!
-
-*/
-
-   if(report.error){
-      s += errors.styleError(report.error,!argv.b)
-    } else if (stat === 'loadError') {
-      s += '\n' + inspect(report)
-    }
-
     s += '\n'
-    s += ["RESULT:" , style(status(stat)).underline, style(pass + '/' + tests.length).bold.lpad(10)].join(' ')
+    s += ["RESULT:" , style(status(stat)).underline, style(pass + '/' + report.tests.length).bold.lpad(10)].join(' ')
     
     console.log(s)
   }

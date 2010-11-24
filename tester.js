@@ -47,12 +47,9 @@ function Tester (filename){
       }
     }
 
-  //  var oldArgs = process.argv
     try{
-//      process.argv = ['node',filename] //incase script think
       require(filename)
     } catch (error) { //catch sync error
-    //  process.argv = oldArgs
       return onError(error)
     }
   }

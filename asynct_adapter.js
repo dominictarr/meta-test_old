@@ -1,4 +1,4 @@
-var TestReports = require('meta-test/test_reports')
+var TestReports = require('meta_test/test_reports')
   , inspect = require('inspect')
   , se = require('style/error')  
   , style = require('style')  
@@ -60,6 +60,6 @@ function runTest (file,callbacks){
 }
 
 if (require.main == module){
-  runTest('meta-test/test/examples/asynct/test-wrap_tests',require('./cli').callbacks)
+  runTest('meta_test/test/examples/asynct/test-wrap_tests',require('./cli').callbacks)
 }
 
