@@ -2,10 +2,10 @@
 
 //check that runSuite callbacks are executed in order.
   var expected = require('./lib/asynct/expected')
-    , subtree = require('meta_test/subtree')
+    , subtree = require('meta-test/subtree')
 //    , asynct = require('async_testing')
 //    , asynct = require('async_testing/lib/child_http')
-    , asynct = require('meta_test/child2')
+    , asynct = require('meta-test/child2')
 
 //var testing = require('async_testing/lib/testing')
   , inspect = require('util').inspect
@@ -74,7 +74,7 @@ function checkCallbacks (test, filename,expected){
   function makeTest(j){
       exports[j] = function (test){
        // var tests = expected.expected[j].tests.map(function (e){return e.name})
-        checkCallbacks(test,'meta_test/test/examples/asynct/' + j,expected.expected[j])
+        checkCallbacks(test,'meta-test/test/examples/asynct/' + j,expected.expected[j])
       }
     console.log(j)
     }

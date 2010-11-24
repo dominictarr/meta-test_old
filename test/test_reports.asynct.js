@@ -1,8 +1,8 @@
 //test_reports.asynct
 
 var should = require('should')
-  , TestReports = require('meta_test/test_reports')
-  , subtree = require('meta_test/subtree')
+  , TestReports = require('meta-test/test_reports')
+  , subtree = require('meta-test/subtree')
   , assertObj = TestReports.assertObj
   , assert = require('assert')
   , query = require('query')
@@ -58,9 +58,10 @@ exports ['can create a test report'] = function (test){
   st1.should.have.property('test', 'test1')
   ss.should.have.property('status', 'started')
 
-  test.throws(function (){
+/* this sort of overzelous checking creates more problems than it solves.
+  test.throws(function (){ 
     r.testStart ('not a test')
-  })
+  })*/
   
   t1 = r.testDone ('test1')
   t1.should.have.property('test', 'test1')
@@ -150,11 +151,11 @@ function errorEql(b,a){
     delete a.stack
     b.name = b.name
     a.name = a.name
-    should.equal(a.name,b.name)
+    assert.equal(a.name,b.name)
     if(b.message)
       b.message.should.eql(a.message)
     else
-      should.ok(!a.message)
+      assert.ok(!a.message)
 }
 
 exports ['ability to get a assert without throwing it'] = function (test){

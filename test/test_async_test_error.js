@@ -3,8 +3,8 @@ if (module == require.main) {
   require('async_testing').run(__filename, process.ARGV);
 }
 
-var MetaTest = require('meta_test')
-, subtree = require('meta_test/subtree')
+var MetaTest = require('meta-test')
+, subtree = require('meta-test/subtree')
 , inspect = require('util').inspect
 
 function runTest (test,filename,expected){

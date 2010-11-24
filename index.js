@@ -1,3 +1,3 @@
 
 
-module.exports = require('./meta_test')
+module.exports = require('./meta-test')

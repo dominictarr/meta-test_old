@@ -1,6 +1,6 @@
 
-var dir = "meta_test/test/examples/script/"
-  , TestReports = require('meta_test/test_reports')
+var dir = "meta-test/test/examples/script/"
+  , TestReports = require('meta-test/test_reports')
   , fail = TestReports.assertObj
   , query = require('query')
   , inspect = require('inspect')
