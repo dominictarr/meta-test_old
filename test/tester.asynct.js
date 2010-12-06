@@ -1,5 +1,5 @@
 
-var child = require('child')
+var child = require('meta-test/child2')
   , inspect = require('inspect')
   , Tester = require('meta-test/tester')
   , subtree = require('meta-test/subtree')

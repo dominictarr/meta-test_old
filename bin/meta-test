@@ -1,5 +1,5 @@
 #! /usr/local/bin/node
 
-return require('./cli')
+return require('../cli')
 
 

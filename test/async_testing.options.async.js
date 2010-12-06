@@ -67,10 +67,9 @@ function checkCallbacks (test, filename,expected){
 }
 
 //generate tests.
-  /*for (i in expected.expected){
-    makeTest(i)
-  }*/
-  makeTest ('test-wrap_tests')
+    Object.keys(expected.expected).forEach(makeTest)
+  
+//  makeTest ('test-wrap_tests')
   function makeTest(j){
       exports[j] = function (test){
        // var tests = expected.expected[j].tests.map(function (e){return e.name})

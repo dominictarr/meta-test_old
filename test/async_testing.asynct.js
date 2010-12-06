@@ -7,17 +7,6 @@ var child = require('meta-test/child2')
 
 expected.forEach(makeTests)
 
-/*makeTests(expected[0])
-makeTests(expected[1])
-makeTests(expected[2])
-makeTests(expected[3])
-makeTests(expected[4])*/
-/*makeTests(expected[5])
-makeTests(expected[6])
-makeTests(expected[7])*/
-//makeTests(expected[8])
-//makeTests(expected[0])
-
 function makeTests(expect){
 
   exports["asynct_adapter(" + expect.suite + ")"] = 
@@ -36,8 +25,6 @@ function makeTests(expect){
         test.finish()
       }
     }
-
-//  console.log(expect)
 }
 
 

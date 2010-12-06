@@ -7,6 +7,11 @@ used to check that a testing framework generates the correct result to running a
 
 wraps testing frameworks with a standard reporting structure, an adapter and runs the test in a seperate process.
 
+IMPORTANT NOTE TO SELF: *IN JavaScript
++ *ANYTHING* can be thrown. even null or undefined. must be able to handle this.
++ in an async enviroment, it is possible to get multiple errors.
+
+
 ###adapters: 
 
 1.script :'meta-test/tester'         //plain scripts which throw an error or not.
@@ -26,5 +31,7 @@ now that I have a lot of files, i gotta keep track of what ones are currently in
   problem with meta test right now, is that since i'm bringing in child runner 
   (to run test in seperate process) it's not using remap ! 
   NEXT: integrate remap into child runner!
+  
+  test_meta_test broken.
   
   

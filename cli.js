@@ -1,36 +1,51 @@
 //cli
 
-var argv = require('optimist')
+/*var argv = require('optimist')
       .usage('Usage: meta-test -a [script|asynct|expresso|vows] -t [test]')
       .demand(['a','t'])
-      .argv
+      .argv*/
 
 //var argv = {b: false, a: 'asynct'}
-  , style = require("style").enable(!argv.b)
+var style = require("style")
   , errors = require("style/error")
-  , child = require('child')
+  , child = require('./child2')
   , adapters = 
       { script: "./tester"
-      , asynct: "./asynct_adapter" }
-  , adapter = adapters[argv.a] || (function (){throw "require -a to be [script|asynct|expresso|vows]"})()
+      , asynct: "./asynct_adapter" 
+      , expresso: "./expresso-adapter" }
+//  , adapter = adapters[argv.a] || (function (){throw "require -a to be [script|asynct|expresso|vows]"})()
 
-exports.callbacks = { adapter: adapter
-    , onSuiteStart: suiteStart
+  exports.adapters = adapters
+
+  exports.callbacks = {
+     onSuiteStart: suiteStart
     , onTestDone: testDone
     , onTestStart: testStart
     , onSuiteDone: suiteDone }
 
-  child.runFile(argv.t, exports.callbacks )
+  exports.run = run
 
-   var colours = 
-      { success : ["green",'bold']
-      , failure : ['yellow','inverse']
-      , error :   ['red','bold','underline'] 
-      , started: ['yellow','bold']
-      , loadError: ['yellow','bold','underline','inverse']
-      }
-   var suite =''
-  
+  function run (test,adapter,done){
+   var opts = exports.callbacks
+    opts.adapter = adapters[adapter]
+    oldDone = opts.onSuiteDone
+/*    opts.onSuiteDone = function (status,report) {
+      oldDone(status,report)
+      done(status,report)
+    }*/
+    opts.onExit = done
+   child.runFile ( test,  opts)
+  }
+ 
+  var colours = 
+    { success : ["green",'bold']
+    , failure : ['yellow','inverse']
+    , error :   ['red','bold','underline'] 
+    , started: ['yellow','bold']
+    , loadError: ['yellow','bold','underline','inverse']
+    }
+  var suite =''
+
   function suiteStart(report){
     console.log(['        ~~~~~~~',style('MetaTest').bold,'~~~~~~~        '].join(' '))
     console.log(Date(), '\n')
@@ -45,17 +60,17 @@ exports.callbacks = { adapter: adapter
      
     console.log(s)
   }
-  
-    function status (s){
-      var _s = s
-        if(s == 'error')
-          s = s.toUpperCase()
-        var status = style(s)
-        status.styles = colours[_s] || ['rainbow']
-      return '' + status
-    }
+
+  function status (s){
+    var _s = s
+      if(s == 'error')
+        s = s.toUpperCase()
+      var status = style(s)
+      status.styles = colours[_s] || ['rainbow']
+    return '' + status
+  }
   function testStart (status,report){
- 
+
     var s = ['   *',style(report.test).cyan].join(' ')
     
     console.log(s)
@@ -63,7 +78,7 @@ exports.callbacks = { adapter: adapter
   function testDone (stat,report){
 
     var s = ['   -',style(report.test).grey.rpad(60,style('.').grey), status (report.status)].join(' ')
- 
+
     console.log(s)
   }
 
@@ -76,16 +91,16 @@ exports.callbacks = { adapter: adapter
     s += tests.map(function (t){
       if(t.status == 'success') pass ++
       return ['   ',status(t.status), ' -- ' , style(t.test).bold].join(" ")
-         + (t.failure ? '\n' + errors.styleError(t.failure,!argv.b) : ' -- ') + '\n'
+         + (t.failure ? '\n' + errors.styleError(t.failure) : ' -- ') + '\n'
     }).join('\n')
 
-/*
+  /*
   treat loadError like a normal error!
 
-*/
+  */
 
    if(report.error){
-      s += errors.styleError(report.error,!argv.b)
+      s += errors.styleError(report.error)
     } else if (stat === 'loadError') {
       s += '\n' + inspect(report)
     }
