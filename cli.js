@@ -91,7 +91,7 @@ var style = require("style")
     s += tests.map(function (t){
       if(t.status == 'success') pass ++
       return ['   ',status(t.status), ' -- ' , style(t.test).bold].join(" ")
-         + (t.failure ? '\n' + errors.styleError(t.failure) : ' -- ') + '\n'
+         + (t.failure ? '\n' + errors.styleError(t.failure) : ' -- ')
     }).join('\n')
 
   /*
