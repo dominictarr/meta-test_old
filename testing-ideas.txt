@@ -1,0 +1,37 @@
+testing in nodejs
+
+observations of a month or so working on test frameworks:
+
+  1. anything can be thrown. (cannot assume error will be instanceof Error)
+  2. in async, possible to get multiple errors. very important not to obscure earlier errors with later ones.
+  3. impossible to catch all errors unless in child process. example: SyntaxError. 
+
+only way to get the error message from this is run test in child process and then scan stderr.
+a message in stderr does not always mean a fatal error.
+have to check for unexpected exit of child and only then parse stderr.
+      
+although it seems crude, sending messages from child process back through stdout is very simple,
+and messages arrive in correct order, it doesn't keep the child alive when it would normally exit.
+
+a test framework has to solve a number a problems to be robust and useful.
+
+  1. runner                 - run tests and collect errors/results.
+  2. reporting API          - collect information about test run suitable for an API
+  3. human readible report  - translate reporting API to be useful human user
+  4. command line API       - specify what tests to run...
+  5. child process runner   - run a test as child process and message back. 
+      (a light weight framework doesn't strictly need to do this, but a framework with asperations of being useful for continuious integration or more, must do so)
+
+although there are differing scenerios that warrant different test runners (1), for example, 
+expresso provideds a good user interface for testing sync code, but async_testing is more suited to testing async code.
+
+otherwise, 2-4 are necessary for all test frameworks. 
+
+currently, async_testing is not very modular... which means it's harder to maintain and harder to test.
+
+what i recommend is to reimplement the internals of async_testing, to use smaller tighter modules.
+
+this will be quite simple actually, because i've already implemented & tested modules for 2-4. so all thats necessary is to basicially pull out the code for runSuite & tidy it up.
+
+
+
