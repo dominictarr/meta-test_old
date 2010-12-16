@@ -8,7 +8,7 @@
     , asynct = require('meta-test/child2')
 
 //var testing = require('async_testing/lib/testing')
-  , inspect = require('util').inspect
+  , inspect = require('inspect')
   
   
 function checkCallbacks (test, filename,expected){

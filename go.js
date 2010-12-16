@@ -13,7 +13,7 @@ if (process.argv[0]) {
 }
 var files = [].concat(process.argv)
 
-//console.log('adapter:', adapter)
+console.log('adapter:', adapter)
 //console.log('files:', inspect(files))
 require.paths.push(process.env.PWD)
 //console.log('paths:',inspect(require.paths))

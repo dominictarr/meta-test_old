@@ -40,7 +40,7 @@ var style = require("style")
       var test = files.shift()
         , a = /.(\w+)\.js$/.exec(test)
         
-      _adapter = a ? a[1] : adapter
+      _adapter = a && adapters[a[1]] ? a[1] : adapter
 
       if(test)
         run(require.resolve(test),_adapter,loop)
