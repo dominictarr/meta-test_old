@@ -92,7 +92,7 @@ function runFile (file,options) {
 
   child.stderr.on('close', function() {
     if (errorBuffer && options.onSuiteDone && !normalExit) {
-      options.onSuiteDone('loadError', {error: errorBuffer.trim()});
+      options.onSuiteDone('loadError', {filename: file, error: errorBuffer.trim()});
     }
   });
 }

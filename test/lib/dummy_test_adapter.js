@@ -1,9 +1,10 @@
 
 
 exports.runTest = runTest
-
+console.log("1231111111111111^*&&&&&&&&&&&&&&&&&&&&&%^%&")
 function runTest(file,callbacks){
   var test = require(file)
+console.log("1231111111111111^*&&&&&&&&&&&&&&&&&&&&&%^%&")
 /*
   if(callbacks.onSuiteStart){
     callbacks.onSuiteStart('onSuiteStart', {test: "dummy_test_adapter: onSuiteStart", object: test})
@@ -27,7 +28,7 @@ function runTest(file,callbacks){
         }
         process.nextTick(c)
         function c (){
-          console.log("DUMMY TEST ADAPTER: call onSuiteDone")
+          console.log("DUMMY TEST ADAPTER: call onExit")
           if(callbacks.onExit){
             callbacks.onExit('onExit',  {test: "dummy_test_adapter: onExit", object: test})//to mark a normal exit.
           }

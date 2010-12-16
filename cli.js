@@ -9,10 +9,13 @@
 var style = require("style")
   , errors = require("style/error")
   , child = require('./child2')
+  , log = require('logger')
+  , curry = require('curry')
   , adapters = 
       { script: "./tester"
       , asynct: "./asynct_adapter" 
       , expresso: "./expresso-adapter" }
+
 //  , adapter = adapters[argv.a] || (function (){throw "require -a to be [script|asynct|expresso|vows]"})()
 
   exports.adapters = adapters
@@ -24,25 +27,60 @@ var style = require("style")
     , onSuiteDone: suiteDone }
 
   exports.run = run
+  exports.runAll = runAll
+
+  function runAll(files,adapter){
+    var results = []  
+
+    loop(null)
+
+    function loop(status,report){
+      if(status)
+        results.push([status,report])
+      var test = files.shift()
+        , a = /.(\w+)\.js$/.exec(test)
+        
+      _adapter = a ? a[1] : adapter
+
+      if(test)
+        run(require.resolve(test),_adapter,loop)
+      else {
+        finished()
+      }
+    }
+    function finished(){
+     console.log('\n')
+     console.log(style('ALL TESTS COMPLETE').bold.white.to_s)
+     console.log(Date(), '\n')
+
+     results.forEach(function (e){
+        suiteDone.apply(null,e)
+      })
+    }
+  }
 
   function run (test,adapter,done){
    var opts = exports.callbacks
+    , result = []
     opts.adapter = adapters[adapter]
-    oldDone = opts.onSuiteDone
-/*    opts.onSuiteDone = function (status,report) {
-      oldDone(status,report)
-      done(status,report)
-    }*/
-    opts.onExit = done
-   child.runFile ( test,  opts)
+    //oldDone = opts.onSuiteDone
+    opts.onSuiteDone = function (status,report) {
+     // oldDone(status,report)
+     // done(status,report)
+     result[0] = status
+     result[1] = report
+     suiteDone(status,report)
+    }
+    opts.onExit = curry(result,done)
+    child.runFile ( test,  opts)
   }
  
   var colours = 
-    { success : ["green",'bold']
-    , failure : ['yellow','inverse']
-    , error :   ['red','bold','underline'] 
+    { success : ["green"]
+    , failure : ['yellow']
+    , error :   ['red','bold'] 
     , started: ['yellow','bold']
-    , loadError: ['yellow','bold','underline','inverse']
+    , loadError: ['yellow','bold','inverse']
     }
   var suite =''
 
@@ -67,7 +105,8 @@ var style = require("style")
         s = s.toUpperCase()
       var status = style(s)
       status.styles = colours[_s] || ['rainbow']
-    return '' + status
+    
+    return status
   }
   function testStart (status,report){
 
@@ -83,30 +122,41 @@ var style = require("style")
   }
 
   function suiteDone (stat,report){
-    var s = [style("Suite Done!").white.bold, style(report.suite).bold.cyan, '\n\t', style(report.filename).grey,'\n'].join(' ')
-    
-      tests = report.tests || []
-    var pass = 0
+    var styler = status(stat).styler
+      , passes = 0
+      , s = ''
 
-    s += tests.map(function (t){
-      if(t.status == 'success') pass ++
-      return ['   ',status(t.status), ' -- ' , style(t.test).bold].join(" ")
-         + (t.failure ? '\n' + errors.styleError(t.failure) : ' -- ')
-    }).join('\n')
-
+    tests = report.tests || []
+    tests.forEach(function (t){
+      if(t.status == 'success') {
+        passes ++
+        return 
+      }
+      
+      var message = t.failure ? '\n' + errors.styleError(t.failure) : ''
+      s += 
+        [ '\n'
+        , status(t.status)
+        , ' -- ' 
+        , style(t.test).bold
+        , '\n'
+        , message
+        ].join(" ")
+    })
+    var shortName = report.filename.replace(process.ENV.PWD,'.')
+      , h = 
+        style(styler(shortName) + ' ').rpad(55,'.') 
+      + style(passes + '/' + tests.length).lpad(7,'.')
+//    console.log(h)
   /*
   treat loadError like a normal error!
 
   */
-
    if(report.error){
-      s += errors.styleError(report.error)
+      s += '\n' + errors.styleError(report.error)
     } else if (stat === 'loadError') {
-      s += '\n' + inspect(report)
+      s += '\n' + errors.styleError(report.error)
     }
 
-    s += '\n'
-    s += ["RESULT:" , style(status(stat)).underline, style(pass + '/' + tests.length).bold.lpad(10)].join(' ')
-    
-    console.log(s)
+    console.log(h + s)
   }

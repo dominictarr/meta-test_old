@@ -5,18 +5,16 @@ if (module == require.main) {
 var child = require('meta-test/child2')
   , inspect = require('inspect')
 
+
 exports ['can run a simple test'] = function(test){
 
-  child.runFile('meta-test/test/examples/asynct/test-all_passing',{onSuiteDone: suiteDone})
+  child.runFile('meta-test/test/examples/asynct/test-all_passing',{onSuiteDone: suiteDone,onExit: test.finish})
 
   function suiteDone(status,report){
-  console.log("ERROR:")
-  console.log(inspect(report))
-    test.equal(status,'complete')
+    test.equal(status,'success')
     
-  //  tset.equal(report.test == 'complete')
-    test.finish()
   }
+
 
 }
 
@@ -44,27 +42,26 @@ exports ['can make callbacks into message and back'] = function(test){
 }*/
 
 exports ['accepts test adapter'] = function (test){
-  var calls = [/*'onSuiteStart',*/'onTestStart','onTestDone','onSuiteDone','onExit']
-  var callbacks = { adapter: "meta-test/test/lib/dummy_test_adapter" }
-  
+  var calls = ['onTestStart','onTestDone','onSuiteDone','onExit']
+    , callbacks = { adapter: "meta-test/test/lib/dummy_test_adapter" }
+    , called = []
   calls.forEach(each)
   
   function each(fName){
     callbacks[fName] = function (status,data){
-      thisCall = calls.shift()
-      console.log("dummy test adapter called: " + thisCall + " expected:" + fName)
-      test.equal(thisCall,fName)
+      called.push(fName)
+      console.log("dummy test adapter called: " + status + " expected:" + fName)
       test.equal(status,fName)
       test.deepEqual(data , {test: "dummy_test_adapter: " + fName, object: {magicNumber: 123471947194 } } )
       
-      if (calls.length == 0) {
+      if (calls.length == called.length) {
         test.finish()
       }
     }
   }
-
   child.runFile("meta-test/test/lib/magic_number" ,callbacks)
 }
+
 
 exports ['calls onSuiteDone(\'loadError\') if child did not exit properly.'
             + ' example: syntax error'] = function (test) {
@@ -115,16 +112,4 @@ exports ['calls onSuiteDone(\'loadError\') does not confuse stderr with real loa
   child.runFile("meta-test/test/lib/stderr" ,callbacks)
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/**/

@@ -21,6 +21,10 @@ require.paths.push(process.env.PWD)
 
 var cli = require('./cli')
 
+//console.log(files)
+cli.runAll(files,adapter)
+
+/*
 run()
 
 function run(){
@@ -35,7 +39,7 @@ function run(){
   if(test)
     cli.run(require.resolve(test),_adapter,run)
 }
-
+*/
 /*
 >meta add [projectdir|git-repo]
 >meta update [author/]project[/file]
