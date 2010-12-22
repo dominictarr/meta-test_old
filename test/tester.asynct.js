@@ -5,6 +5,7 @@ var child = require('meta-test/child3')
   , subtree = require('meta-test/subtree')
   , TestReports = require('meta-test/test_reports')
   , expected = require('meta-test/test/lib/script/expected')
+
 //tester.script.asynct.js
 
 /*

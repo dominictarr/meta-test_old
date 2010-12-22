@@ -8,9 +8,10 @@
 //var argv = {b: false, a: 'asynct'}
 var style = require("style")
   , errors = require("style/error")
-  , child = require('./child2')
+  , child = require('./child3')
   , log = require('logger')
   , curry = require('curry')
+  , parser = require('meta-test/cmd-parser')
   , adapters = 
       { script: "meta-test/tester"
       , asynct: "meta-test/asynct_adapter" 
@@ -29,8 +30,9 @@ var style = require("style")
 
   function runAll(filesToRun,adapter){
     var results = []  
-
+    filesToRun = parser(filesToRun)
 //    files = [files[0]]
+    log(filesToRun)
 
    loop(null)
 
@@ -160,3 +162,4 @@ var style = require("style")
 
     console.log(h + s)
   }
+
