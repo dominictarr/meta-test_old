@@ -1,7 +1,7 @@
 //child3
 
-var child = require('child')
-
+var child = require ('child/child_stdout2')
+  , log = require ('logger')
 /*
 this has been replimented, this is adapter for interface of meta-test/child
 */
@@ -14,13 +14,18 @@ function runFile (file,options) {
   delete options.adapter
 
   child.run(
-    { require: adapter || 'async_testing/lib/asynct_adapter'
+    { require: adapter || 'meta-test/asynct_adapter'
     , function: 'runTest'
     , args: [file, options] 
-    , onError: error })
+    //on exit, on timeout
+    , onError: error 
+    , onExit: options.onExit
+    })
     
     function error (error){
-      options.onSuiteDone && options.onSuiteDone('loadError',{error: error})
-    }
-    
+      options.onSuiteDone && options.onSuiteDone('loadError',
+        { filename: file 
+        , error: error
+        })
+    }    
 }

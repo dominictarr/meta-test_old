@@ -15,7 +15,6 @@ function runTest (file,callbacks){
       , onTestDone:  testDone
       , onSuiteDone: suiteDone }
 
-  process.on('exit', onExit)
   test = require(file)
   suiteStart()
   asynct.runSuite (test,newCallbacks)
@@ -48,9 +47,6 @@ function runTest (file,callbacks){
   function suiteDone (status,report){
     var td = r.suiteDone (report.test)
     callback ('onSuiteDone',td.status,td)
-  }
-  function onExit (code,status){
-    callback ('onExit',code,status)
   }
 }
 

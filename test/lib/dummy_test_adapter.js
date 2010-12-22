@@ -26,13 +26,14 @@ console.log("1231111111111111^*&&&&&&&&&&&&&&&&&&&&&%^%&")
         if(callbacks.onSuiteDone){
           callbacks.onSuiteDone('onSuiteDone', {test: "dummy_test_adapter: onSuiteDone", object: test})
         }
-        process.nextTick(c)
+        //ah. the test adapter shouldn't handle onExit. that should be for child process runner.
+/*        process.nextTick(c)
         function c (){
           console.log("DUMMY TEST ADAPTER: call onExit")
           if(callbacks.onExit){
             callbacks.onExit('onExit',  {test: "dummy_test_adapter: onExit", object: test})//to mark a normal exit.
           }
-        }
+        }*/
       }
     }
   //}

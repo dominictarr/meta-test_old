@@ -4,6 +4,12 @@ if (module == require.main) {
 
 var child = require('meta-test/child2')
   , inspect = require('inspect')
+  , log = require('logger')
+
+/*
+  this tests behaviour specific to meta-test/child2. 
+  the extra stuff, messages, etc are seperated out in 'child'
+*/
 
 
 exports ['can run a simple test'] = function(test){
@@ -12,10 +18,7 @@ exports ['can run a simple test'] = function(test){
 
   function suiteDone(status,report){
     test.equal(status,'success')
-    
   }
-
-
 }
 
 exports ['can make callbacks into message and back'] = function(test){
@@ -42,7 +45,7 @@ exports ['can make callbacks into message and back'] = function(test){
 }*/
 
 exports ['accepts test adapter'] = function (test){
-  var calls = ['onTestStart','onTestDone','onSuiteDone','onExit']
+  var calls = ['onTestStart','onTestDone','onSuiteDone']
     , callbacks = { adapter: "meta-test/test/lib/dummy_test_adapter" }
     , called = []
   calls.forEach(each)
@@ -54,11 +57,15 @@ exports ['accepts test adapter'] = function (test){
       test.equal(status,fName)
       test.deepEqual(data , {test: "dummy_test_adapter: " + fName, object: {magicNumber: 123471947194 } } )
       
-      if (calls.length == called.length) {
-        test.finish()
-      }
     }
   }
+    callbacks.onExit = function (){
+    log("ON EXIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    test.equal(calls.length,called.length,"expected " + inspect(called) + " to match:" + inspect(calls))
+    test.finish()
+  
+  }
+
   child.runFile("meta-test/test/lib/magic_number" ,callbacks)
 }
 

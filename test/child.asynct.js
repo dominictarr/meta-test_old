@@ -2,8 +2,10 @@ if (module == require.main) {
   return require('async_testing').run(process.ARGV);
 }
 
+//var child = require('meta-test/child2')
 var child = require('meta-test/child3')
   , inspect = require('inspect')
+  , log = require('logger')
 
 exports ['can run a simple test'] = function(test){
 
@@ -12,7 +14,7 @@ exports ['can run a simple test'] = function(test){
   function suiteDone(status,report){
   console.log("ERROR:")
   console.log(inspect(report))
-    test.equal(status,'complete')
+    test.equal(status,'success')
     
   //  tset.equal(report.test == 'complete')
     test.finish()
@@ -20,27 +22,29 @@ exports ['can run a simple test'] = function(test){
 }
 
 exports ['accepts test adapter'] = function (test){
-  var calls = [/*'onSuiteStart',*/'onTestStart','onTestDone','onSuiteDone','onExit']
-  var callbacks = { adapter: "meta-test/test/lib/dummy_test_adapter" }
-  
+  var calls = ['onTestStart','onTestDone','onSuiteDone']
+    , callbacks = { adapter: "meta-test/test/lib/dummy_test_adapter" }
+    , called = []
   calls.forEach(each)
   
   function each(fName){
     callbacks[fName] = function (status,data){
-      thisCall = calls.shift()
-      console.log("dummy test adapter called: " + thisCall + " expected:" + fName)
-      test.equal(thisCall,fName)
+      called.push(fName)
+      console.log("dummy test adapter called: " + status + " expected:" + fName)
       test.equal(status,fName)
       test.deepEqual(data , {test: "dummy_test_adapter: " + fName, object: {magicNumber: 123471947194 } } )
-      
-      if (calls.length == 0) {
-        test.finish()
-      }
     }
   }
-
+  callbacks.onExit = function (){
+    log("ON EXIT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    test.equal(calls.length,called.length,"expected " + inspect(called) + " to match:" + inspect(calls))
+    test.finish()
+  
+  }
+  
   child.runFile("meta-test/test/lib/magic_number" ,callbacks)
 }
+
 
 function timeout(test,time){
   var _finish = test.finish

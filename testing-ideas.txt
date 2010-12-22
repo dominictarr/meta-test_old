@@ -34,4 +34,3 @@ what i recommend is to reimplement the internals of async_testing, to use smalle
 this will be quite simple actually, because i've already implemented & tested modules for 2-4. so all thats necessary is to basicially pull out the code for runSuite & tidy it up.
 
 
-

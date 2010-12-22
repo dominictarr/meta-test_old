@@ -12,11 +12,9 @@ var style = require("style")
   , log = require('logger')
   , curry = require('curry')
   , adapters = 
-      { script: "./tester"
-      , asynct: "./asynct_adapter" 
-      , expresso: "./expresso-adapter" }
-
-//  , adapter = adapters[argv.a] || (function (){throw "require -a to be [script|asynct|expresso|vows]"})()
+      { script: "meta-test/tester"
+      , asynct: "meta-test/asynct_adapter" 
+      , expresso: "meta-test/expresso-adapter" }
 
   exports.adapters = adapters
 
@@ -29,17 +27,19 @@ var style = require("style")
   exports.run = run
   exports.runAll = runAll
 
-  function runAll(files,adapter){
+  function runAll(filesToRun,adapter){
     var results = []  
 
-    loop(null)
+//    files = [files[0]]
+
+   loop(null)
 
     function loop(status,report){
       if(status)
         results.push([status,report])
-      var test = files.shift()
+      var test = filesToRun.shift()
         , a = /.(\w+)\.js$/.exec(test)
-        
+
       _adapter = a && adapters[a[1]] ? a[1] : adapter
 
       if(test)
@@ -69,7 +69,7 @@ var style = require("style")
      // done(status,report)
      result[0] = status
      result[1] = report
-     suiteDone(status,report)
+     suiteDone(status,report,true)
     }
     opts.onExit = curry(result,done)
     child.runFile ( test,  opts)
@@ -121,7 +121,7 @@ var style = require("style")
     console.log(s)
   }
 
-  function suiteDone (stat,report){
+  function suiteDone (stat,report,quiet){
     var styler = status(stat).styler
       , passes = 0
       , s = ''
@@ -133,14 +133,14 @@ var style = require("style")
         return 
       }
       
-      var message = t.failure ? '\n' + errors.styleError(t.failure) : ''
+    var message = t.failure ? '\n' + errors.styleError(t.failure) : ''
       s += 
         [ '\n'
         , status(t.status)
         , ' -- ' 
         , style(t.test).bold
         , '\n'
-        , message
+        , (quiet ? '' : message)
         ].join(" ")
     })
     var shortName = report.filename.replace(process.ENV.PWD,'.')

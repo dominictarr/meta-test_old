@@ -1,4 +1,4 @@
-var child = require('meta-test/child2')
+var child = require('meta-test/child3')
   , inspect = require('inspect')
   , Tester = require('meta-test/tester')
   , subtree = require('meta-test/subtree')
@@ -18,10 +18,10 @@ function makeTests(expect){
       function done(status,report){
         test.notEqual(status,"loadError","\"" + report.stderr + "\"")//fix this
       
-        console.log("TEST DONE")
-
         subtree.assert_subtree(expect,report)
         status.should.eql(expect.status)
+        report.should.have.property('filename')
+
         test.finish()
       }
     }

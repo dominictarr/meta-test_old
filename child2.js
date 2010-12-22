@@ -25,6 +25,8 @@ if (module == require.main) {
 
   callbacks = makeCallbacks(options,send)
   
+  process.on('exit',callbacks.onExit)
+  
   function send(message){
     console.log(messager.messageEncode(message))
   }
@@ -43,8 +45,8 @@ spawn = require('child_process').spawn
 
 exports.runFile = runFile
 function runFile (file,options) {
-  var normalExit = false;
-  oldOnExit = options.onExit
+  var normalExit = false
+    , oldOnExit = options.onExit
 
   options.onExit = function (status,report){
     normalExit = true;
@@ -82,6 +84,7 @@ function runFile (file,options) {
   })
     var errorBuffer = '';
   child.stderr.on('data', function(data) {
+    console.log('>' + data)
     errorBuffer += data.toString();
   });
 
@@ -91,6 +94,7 @@ function runFile (file,options) {
 */
 
   child.stderr.on('close', function() {
+    console.log('STDERR' + errorBuffer)
     if (errorBuffer && options.onSuiteDone && !normalExit) {
       options.onSuiteDone('loadError', {filename: file, error: errorBuffer.trim()});
     }

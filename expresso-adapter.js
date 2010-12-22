@@ -25,6 +25,7 @@ function runTest(file,callbacks){
   var testReport = new TestReports(file)
     , name = testReport.suite
 
+  var orig = process.emit
   eval(expresso)
   
   function callback(call,arg1,arg2){
@@ -62,26 +63,33 @@ function runTest(file,callbacks){
     var r = testReport.testDone(name)
     callback('onTestDone',r.status,r)
   }
-
   
   report = function report (){
     process.emit('beforeExit')//may throw more errors.
 
     testNames.forEach(function (testName){
-    
       callback('onTestDone',testName,testReport.testDone(testName))
-
     })
+
+/*
+OH YEAH, on exit is sync only, it's not possible to send messages except stdio before exit.
+
+a child process messager based on something other than STDIO won't work with expresso.
+
+*/
 
     r = testReport.suiteDone()
     callback('onSuiteDone',r.status,r)
-    callback('onExit')
   }
-  
-  process.on('exit',function (status,code){
-    callback('onExit')
 
-  })
+  process.emit = function(event){
+    if (event === 'exit') {
+      log("ON REPORT")
+      report();
+    }
+    orig.apply(this, arguments);
+  };
+
   cwd = (file[0] == '/') ? '' : './'
 
   runFile(file + '.js')

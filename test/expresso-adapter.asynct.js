@@ -1,14 +1,17 @@
-var child = require('meta-test/child2')
+var child = require('meta-test/child3')
   , inspect = require('inspect')
-  , Tester = require('meta-test/tester')
+//  , Tester = require('meta-test/tester')
   , subtree = require('meta-test/subtree')
   , TestReports = require('meta-test/test_reports')
   , expected = require('meta-test/test/lib/expresso/expected')
   , describe = require('should').describe
   , adapter = require('meta-test/expresso-adapter')
   , log = require('logger')
-expected.forEach(makeTests)
+
+
+//expected.forEach(makeTests)
 //expected.forEach()
+makeTests(expected[0])
 
 function makeTests(expect){
 
@@ -32,7 +35,6 @@ function makeTests(expect){
         if(expect.status != status){
           log(report)        
         }
-
       
         subtree.assert_subtree(expect,report)
         status.should.eql(expect.status)
