@@ -20,7 +20,7 @@ function runFile (file,options, remap) {
     , function: 'runTest'
     , args: [file, options] 
     //on exit, on timeout
-    , remap: options.remap
+    , remap: remap
     , remapReport: report
     , onError: error 
     , onExit: options.onExit

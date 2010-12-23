@@ -86,7 +86,7 @@ exports ['calls onSuiteDone(\'loadError\') if child did not exit properly.'
   child.runFile("meta-test/test/examples/asynct/test-error_syntax" ,callbacks)
 }
 
-
+/*
 exports ['calls onSuiteDone(\'loadError\') does not confuse stderr with real loadError.'] = function (test) {
 
   var callbacks = 
@@ -103,12 +103,18 @@ exports ['calls onSuiteDone(\'loadError\') does not confuse stderr with real loa
   child.runFile("meta-test/test/lib/stderr" ,callbacks)
 }
 
-
 exports ['calls onSuiteDone(\'loadError\') does not confuse stderr with real loadError.2'] = function (test) {
 
   var callbacks = 
       { adapter: "meta-test/test/lib/dummy_test_adapter" 
-      , onSuiteDone: done }
+      , onSuiteDone: done 
+      , onError: error
+      , onExit: error
+      }
+      function error(m){
+        //should not be called.
+        log("$$$$$$$$$$$$$$$$$$$$$$$$",m)
+      }
       
   function done(onSuiteDone,data){
     console.log(data)

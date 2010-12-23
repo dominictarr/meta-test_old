@@ -11,7 +11,6 @@ makeTests(expected[0])
 makeTests(expected[1])
 //makeTests(expected[2])
 function makeTests(expect){
-
   exports["asynct_adapter(" + expect.suite + ")"] = 
     function (test){
 //      console.log("test:" + expect.suite)

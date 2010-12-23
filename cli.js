@@ -10,6 +10,7 @@ var style = require("style")
   , errors = require("style/error")
   , child = require('./child3')
   , log = require('logger')
+  , inspect = require('inspect')
   , curry = require('curry')
   , parser = require('meta-test/cmd-parser')
   , adapters = 
@@ -36,16 +37,16 @@ var style = require("style")
 
    loop(null)
 
-    function loop(status,report){
-      if(status)
-        results.push([status,report])
+    function loop(result){
+      if(result)
+        results.push(result)
       var test = filesToRun.shift()
         , a = /.(\w+)\.js$/.exec(test)
 
       _adapter = a && adapters[a[1]] ? a[1] : adapter
 
       if(test)
-        run(require.resolve(test),_adapter,loop)
+        run(test,_adapter,loop)
       else {
         finished()
       }
@@ -62,19 +63,29 @@ var style = require("style")
   }
 
   function run (test,adapter,done){
-   var opts = exports.callbacks
-    , result = []
+    var opts = exports.callbacks
+      , result = []
+      , remaps
     opts.adapter = adapters[adapter]
+
+    if('object' == typeof test){
+      var _test = test
+      test = Object.keys(_test)[0]
+      remaps = _test[test]
+    }
+
     //oldDone = opts.onSuiteDone
     opts.onSuiteDone = function (status,report) {
-     // oldDone(status,report)
-     // done(status,report)
-     result[0] = status
-     result[1] = report
-     suiteDone(status,report,true)
+
+     result[0] = [status, report, false, remaps]
+
+     log('report',result.length)
+
+    suiteDone(status, report, false, remaps)
     }
     opts.onExit = curry(result,done)
-    child.runFile ( test,  opts)
+        
+    child.runFile ( require.resolve(test), opts, remaps)
   }
  
   var colours = 
@@ -123,7 +134,7 @@ var style = require("style")
     console.log(s)
   }
 
-  function suiteDone (stat,report,quiet){
+  function suiteDone (stat,report,quiet,remaps){
     var styler = status(stat).styler
       , passes = 0
       , s = ''
@@ -145,10 +156,19 @@ var style = require("style")
         , (quiet ? '' : message)
         ].join(" ")
     })
+
     var shortName = report.filename.replace(process.ENV.PWD,'.')
-      , h = 
-        style(styler(shortName) + ' ').rpad(55,'.') 
-      + style(passes + '/' + tests.length).lpad(7,'.')
+      , h 
+      if(!remaps){
+        h = 
+          style(styler(shortName) + ' ').rpad(55,'.') 
+        + style(passes + '/' + tests.length).lpad(7,'.')
+      } else {
+        h = 
+          styler(shortName) + '\n'
+        + style('  ' + styler(inspect(remaps)) + ' ').rpad(55,'.') 
+        + style(passes + '/' + tests.length).lpad(7,'.')
+      }
 //    console.log(h)
   /*
   treat loadError like a normal error!
