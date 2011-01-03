@@ -2,8 +2,9 @@
 
 var child = require ('child/child_stdout2')
   , log = require ('logger')
-  , untangle = require('traverser/untangle').untangle
-  , traverser = require('traverser/traverser2')
+  , inspect = require('inspect')
+  , render = require('render/render2')
+
 /*
 this has been replimented, this is adapter for interface of meta-test/child
 */
@@ -33,11 +34,12 @@ function runFile (file,options, remap) {
         })
     }    
     function report(r){
-      var loaded = branches(r.depends)
-/*      log("LOADED:", file,loaded[file])
-      log("loaded:", loaded)
-      log("DEPENDS:", r.depends)*/
-      log("LOADED:", file, "\ndepends:",loaded[file])
+
+      function s (obj){
+        return render(obj,{multi:true, pad: '\n '})
+      }
+      
+      log(s(r.loaded[file]))
     }
 }
 

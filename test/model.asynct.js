@@ -1,7 +1,8 @@
 //model.asynct.js
 var _model = require('meta-test/model')
   , describe = require('should').describe
-
+  , log = require('logger')
+  
 function shouldModule (m){
   var it = describe(m,"A Module record")
   it.should.have.property('id').a('string')
@@ -64,12 +65,12 @@ exports['can add Modules'] = function (test){
   
   test.finish()  
 }
-function setIsTest(model,id){
+function setIsTest(model,id) {
   var m = model.Module.get(id)
   m.isTest = true
   m.save()
 }
-exports ['can add remaps'] = function (test){
+exports ['can add remaps'] = function (test) {
   var model = _model.db()
   model.dependencyTree(trees.natural)
   model.dependencyTree(trees.naturalR)
@@ -89,24 +90,22 @@ exports ['can add remaps'] = function (test){
 
   setIsTest(model,'meta-modular/examples/test/natural.asynct')
   setIsTest(model,'meta-modular/examples/test/natural.random.asynct')
-
   /*
   Now, if natural2 is updated, 
   test list should be 
   */
   var expected = 
     [ { remaps: {}
-      ,  tests: ['meta-modular/examples/test/natural.random.asynct']}, //defaults
+      ,  tests: ['meta-modular/examples/test/natural.random.asynct']}
     , { remaps: {'meta-modular/examples/natural': 'meta-modular/examples/natural2'}
       ,  tests: ['meta-modular/examples/test/natural.asynct'] } ]
 
   describe ( model.testsToRun (['meta-modular/examples/natural2'])
     , "tests to rerun after updating traverser/iterators" )
       .should.eql (expected)
-   
+
   test.finish()
 }
-
 exports ['adds modules & dependencies, more complex'] = function (test){
   var model = _model.db()
 
@@ -177,4 +176,180 @@ exports ['adds modules & dependencies, more complex'] = function (test){
  
   test.finish()
 }
+
+/*
+more through example.
+use car metaphore.
+
+remaps of dependencies:
+all need to be substituted into tests, so they cartesian product all tests.
+
+cartesian product? or every permutation?
+
+this could generate a lot of tests to run, 
+but there are also numerous ways to prioritise the tests.
+also, compute is very cheap.
+
+TESTS will have a lot of changing dependencies, so will need this for when tests update.
+
+XXX when testing remapped modules, remaps need to be added to current remaps. XXX
+*/
+function shouldUpdate(model,module,expected){
+  var actual = model.testsToRun([module])
+  log('UPDATE', actual)
+
+  describe(actual, "tests to run after " + module + " is updated")
+    .should.eql(expected)
+}
+exports ['car metaphore example'] = function (test){
+  var model = _model.db()
+    , EM,IC, car,engine,spark,piston
+    , carParts = 
+  [ car = 
+    { 'car': 
+      engine = 
+      { 'engine': 
+        IC = 
+        { 'piston': {}
+        , 'crankshaft': {}
+        , 'spark-plug': {} } }
+    , 'brakes': {}
+    , 'steering': {}
+    , 'wheel': 
+      { 'rubber-tyre': {} } }
+  //TESTS.
+  , { 'car-test'          : car }
+  , { 'engine-test'       : engine }
+  , { 'spark-test'        : { 'spark-plug': {} } }
+  , { 'compression-test'  : { 'piston': {} } }
+  //SUBSTITUTE PARTS
+  , { 'spark-plug2': {}}
+  , { 'electric-motor': 
+      EM = 
+      { 'magnets': {} 
+      , 'commutator': {}
+      , 'rotor': {} } }
+  , { 'hybrid': 
+      { 'electric-motor': EM
+      , 'engine': IC } }
+  , {'power-steering': 
+      { 'hydraulics': {} } }
+  ]
+
+  var remaps = 
+  [ /*{'engine'    : 'hybrid'} 
+    // confusing, because this can produce infinite loop.
+    // support this so can have wrapper modules.
+    // check that modules are not circular when loading...
+    // means will need hierachical remaps.
+    // {'engine': {'.': 'hybrid', 'engine': 'engine'}}
+    // load hybrid as default engine, but use normal engine inside hybrid. 
+  ,*/ 
+    {'engine'    : 'electric-motor'}
+  , {'spark-plug': 'spark-plug2'}
+  , {'steering'  : 'power-steering'} ]
+
+  carParts.forEach(function(p){
+    model.dependencyTree(p)
+  })
+
+  setIsTest(model,'car-test')
+  setIsTest(model,'engine-test')
+  setIsTest(model,'spark-test')
+  setIsTest(model,'compression-test')
+
+  model.Module.forEach(function(o,k){
+    log("CAR EXAMPLE :",k, model.Module.get(k).required)
+  })
+  //test run list before adding remaps
+
+  shouldUpdate ( model, 'spark-plug',
+    [ {remaps: {}, tests: ['spark-test','engine-test','car-test'] } ] )
+
+  shouldUpdate ( model, 'engine',
+    [ {remaps: {}, tests: ['engine-test','car-test'] } ] )
+
+  shouldUpdate ( model, 'steering',
+    [ {remaps: {}, tests: ['car-test'] } ] )
+
+/*
+when a test is updated, gather remaps for requires (dependencies)
+(remember: remaps & requires is moving up the dependency tree
+           , remapped & required is moving down the tree)
+.remaps is the essential remaps, these tests relation to the updated module.
+
+submaps(?) for remaps of updated's requires?
+must be a tree? incase the remaps have requires
+or should it be an array, in that there are multiple options?
+and each permutation needs to be tested.
+
+these remaps apply to all tests in this run list
+
+so, generate them with a different function! YUSS!
+
+[{x:y}, {z:z2}, {a: {'.':A, b:b2, c:c2} } } ]
+//or just generate the flat permutations?
+1.  get list of remaps for requires of updated.
+
+generate permutations,
+for each permutation. get remapsOfRequires for each remap.    
+*/
+  remaps.forEach(function(p){
+    model.addRemaps(p)
+  })
+
+  var emptyDefauts = {remaps: {}, tests: []}
+  shouldUpdate ( model, 'spark-plug2',
+    [ emptyDefauts //no tests for spark-plug2
+    , {remaps: {'spark-plug': 'spark-plug2'}
+      , tests: ['spark-test', 'engine-test', 'car-test'] } ] )
+
+  shouldUpdate ( model, 'electric-motor',
+    [ emptyDefauts //no tests for spark-plug2
+    , {remaps: {'engine': 'electric-motor'}
+      , tests: ['engine-test', 'car-test'] } ] )
+
+//order of remaps is not important.
+
+  describe(model.remapsOfRequires('spark-test')
+    , "remaps of requires of spark-test")
+    .should.eql([{'spark-plug':'spark-plug2'}])
+
+  describe(model.remapsOfRequires('engine-test').sort()
+    , "remaps of requires of spark-test")
+    .should.eql(
+      [ {'engine':'electric-motor'}//spark-plug wont be used if {engine:'electric-motor'}
+      , {'spark-plug':'spark-plug2'} ].sort() )
+
+  describe(model.remapsOfRequires('car-test').sort()
+    , "remaps of requires of spark-test")
+    .should.eql(
+      [ {'engine':'electric-motor'}
+      , {'spark-plug':'spark-plug2'} //spark-plug wont be used if {engine:'electric-motor'}
+      , {'steering': 'power-steering'} ].sort() )
+      
+/*
+this isn't quite right. spark-plug won't be used in an electric motor.
+
+maybe generate permutations at each level, and append permutations of requires of each permutation?
+car: [{en : e-m}, {sp:sp2}, {st: pow-st},{sp:sp2, st: pow-st}]
+do I actually need to test every combination? is to test each single remap enough?
+
+if so, what I have is enough.
+maybe combinations are only REALLY important when one requires the other.
+
+so, run tests for each set of remaps, and each map, get it's remapsOfRequries (recursively)
+this example doesn't go that deep yet.  
+*/
+
+  /*
+  So, next. run each set of tests from
+  testsToRun with defaults and each remap in remapsOfRequires.
+  
+*/
+  
+  
+  test.finish()
+}
+
 

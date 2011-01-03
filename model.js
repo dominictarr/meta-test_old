@@ -3,6 +3,19 @@ var mini = require('miniorm')
   , log = require('logger')
   , model = module.exports
 
+/*
+ALthought I do like the idea of node-dirty, 
+it is problematic because it's too sync.
+
+if you access it with sync code, and want to expand to a *real* database
+later, you'll have to change all your code to async. which will be a capslock-on pita.
+
+I have to do that now, because i've tested my dirty based code in memory,
+but it cant read from memory right and provide the same interface.
+
+
+*/
+
 module.exports = database ()
 module.exports.db = database
 
@@ -41,6 +54,9 @@ function database (dir){
           
     */   
     })
+
+  log("LOADED MODEL INTO ",dir)
+
   /*
     ???
   store remaps like this and then traverse them when looking for what tests to run?
@@ -164,7 +180,7 @@ function database (dir){
   model.testsToRun = testsToRun
   function makeRemaps(from,to){
     var remaps = {}
-    remaps.from = to
+    remaps[from] = to
     return remaps 
   }
   function makeSet(remaps){
@@ -198,13 +214,43 @@ function database (dir){
           addIf(set.tests,e)
           return
         }
+        if(m.remapped){
+          m.remapped.forEach(function (d){
+            var s = makeSet(makeRemaps(d,m.id))
+            log("REMAPS", d, '=>', m.id)
+            
+            sets.push(s)
+            getUpdated([d],s)
+          })
+        }
         var r = m.required
-        n = merge(n,r)
+        if(m.required)
+          n = merge(n,r)
       } )
       if(n.length)
         getUpdated(n,set)
     }
   }
+  model.remapsOfRequires = remapsOfRequires
+
+  function remapsOfRequires (updated){
+  //traverse requires and list all remaps
+    var remaps = []
+    getRemaps(updated)
+    function getRemaps(updated){
+      var m = model.Module.get(updated)
+      if(m.remaps){
+        m.remaps.forEach(function (r){
+          remaps.push(makeRemaps(updated,r))
+          getRemaps(r)
+        } ) 
+      }
+      if(m.requires)
+        m.requires.forEach(getRemaps)
+    }
+    return remaps
+  }
+
   return model
 }
 /*
@@ -217,4 +263,5 @@ function database (dir){
   3.  on update,
       find list of tests which must be run.    
 */
+
 
